@@ -15,16 +15,40 @@ const tmdbCall = require('../src/tmdb-api/tmdb-api-interface');
 // Broad TV show search request by title
 router.get('/search', (req, res) => {
     // Verify tvShowTitle string was included in the request
-    if (req.body.tvShowTitle) {
-        tmdbCall.tmdbGETRequest(tmdbURL.getTVSearchURL(req.body.tvShowTitle),
-            (response, error) => {
+    if (req.query.tvShowTitle) {
+        tmdbCall.tmdbGETRequest(tmdbURL.getTVSearchURL(req.query.tvShowTitle),
+            (error, response) => {
                 if (response) {
-                    console.log(`Successfully conducted a broad TV show search for ${req.body.tvShowTitle}!`);
+                    console.log(`Successfully conducted a broad TV show search for ${req.query.tvShowTitle}!`);
                     res.status(200).send(response.data);
+                } else if (error) {
+                    console.log(`Unable to conduct a broad TV show search for ${req.query.tvShowTitle} due ` +
+                    `to the following error:\n${error}`);
+                    res.status(404).send(error);
                 }
             })
     } else {
         res.status(400).send('The tvShowTitle argument is missing in your request!')
+    }
+});
+
+// Detailed TV show search request by ID
+router.get('/detailed-search', (req, res) => {
+    // Verify tvShowID string was included in the request
+    if (req.query.tvShowID) {
+        tmdbCall.tmdbGETRequest(tmdbURL.getDetailedTVSearchURL(req.query.tvShowID),
+            (error, response) => {
+                if (response) {
+                    console.log(`Successfully conducted a detailed TV show search for ${req.query.tvShowID}!`);
+                    res.status(200).send(response.data);
+                } else if (error) {
+                    console.log(`Unable to conduct a detailed TV show search for ${req.query.tvShowID} due ` +
+                    `to the following error:\n${error}`);
+                    res.status(404).send(error);
+                }
+            })
+    } else {
+        res.status(400).send('The tvShowID argument is missing in your request!')
     }
 });
 
