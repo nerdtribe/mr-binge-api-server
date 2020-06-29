@@ -11,7 +11,7 @@ require('dotenv').config();
 // Setup express variables
 const express = require('express');
 const app = express();
-const port = 5000;
+const port = process.env.PORT;
 
 // Set port for app to listen and print start message
 app.listen(port, () => console.log(`Mr Binge API server listening on port ${port}`));
