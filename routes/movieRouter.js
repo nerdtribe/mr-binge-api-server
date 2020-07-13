@@ -11,6 +11,11 @@ const router = express.Router();
 // Declare TMDB interface modules to use for TMDB API calls
 const tmdbURL = require('../src/tmdb-api/url-builder')
 const tmdbCall = require('../src/tmdb-api/tmdb-api-interface');
+const tmdbImages = require('../src/tmdb-api/images')
+
+// Verify that optional input image sizes are supported formats or attach default values
+router.use((req, res, next) => tmdbImages.validPosterSizeMiddleware(req, res, next));
+router.use((req, res, next) => tmdbImages.validBackdropSizeMiddleware(req, res, next));
 
 // Broad movie search request by title
 router.get('/search', (req, res) => {
@@ -20,6 +25,7 @@ router.get('/search', (req, res) => {
             (error, response) => {
                 if (response) {
                     console.log(`Successfully conducted a broad movie search for ${req.query.movieTitle}!`);
+                    tmdbImages.populateFullImagePaths(response.data, req.query.posterSize, req.query.backdropSize);
                     res.status(200).send(response.data);
                 } else if (error) {
                     console.log(`Unable to conduct a broad movie search for ${req.query.movieTitle} due ` +
@@ -40,6 +46,7 @@ router.get('/detailed-search', (req, res) => {
             (error, response) => {
                 if (response) {
                     console.log(`Successfully conducted a detailed movie search for movie ID: ${req.query.movieID}!`);
+                    tmdbImages.populateFullImagePaths(response.data, req.query.posterSize, req.query.backdropSize);
                     res.status(200).send(response.data);
                 } else if (error) {
                     console.log(`Unable to conduct a detailed movie search for movie ID: ${req.query.movieID} due ` +
