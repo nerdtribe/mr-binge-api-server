@@ -45,14 +45,22 @@ const populateFullImagePaths = (queryResults, posterSize, backdropSize) => {
     // Check if TMDb response contains a collection of results from a broad search
     if (queryResults.results && queryResults.results.length > 0) {
         queryResults.results.forEach(entry => {
-            entry.poster_path = getImagePath(posterSize, entry.poster_path);
-            entry.backdrop_path = getImagePath(backdropSize, entry.backdrop_path);
+            replacePaths(entry, posterSize, backdropSize);
         });
-    // Check if the returned query results had a valid single media object
-    } else if (queryResults.poster_path && queryResults.backdrop_path) {
-        queryResults.poster_path = getImagePath(posterSize, queryResults.poster_path);
-        queryResults.backdrop_path = getImagePath(backdropSize, queryResults.backdrop_path);
+    // Replace paths for single entry from detailed search
+    } else {
+        replacePaths(queryResults, posterSize, backdropSize);
     };
+}
+
+// Helper function that populates image path if the path isn't 'null'
+const replacePaths = (entry, posterSize, backdropSize) => {
+    if (entry.poster_path) {
+        entry.poster_path = getImagePath(posterSize, entry.poster_path);
+    }
+    if (entry.backdrop_path) {
+        entry.backdrop_path = getImagePath(backdropSize, entry.backdrop_path);
+    }
 }
 
 // Helper function that returns the full path of an image as a String
